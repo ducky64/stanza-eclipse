@@ -10,17 +10,17 @@ public class StanzaScanner extends RuleBasedScanner {
 	protected IToken getToken(Color color) {
 		return getToken(color, 0);
 	}
-	
+
 	protected IToken getToken(Color color, int style) {
 		return new Token(new TextAttribute(color, null, style));
 	}
-	
+
 	protected void addRulesToWordRule(WordRule wordRule, String[] words, IToken token) {
 		for (String word: words) {
 			wordRule.addWord(word, token);
 		}
 	}
-	
+
 	public StanzaScanner(ColorManager manager) {
 		List<IRule> rules = new ArrayList<IRule>();
 
@@ -36,27 +36,30 @@ public class StanzaScanner extends RuleBasedScanner {
 				return Character.isLetter(c);
 			}
 		});
-		IToken keywordToken = getToken(manager.getColor(IStanzaColorConstants.KEYWORD), SWT.BOLD); 
+		IToken keywordToken = getToken(manager.getColor(IStanzaColorConstants.KEYWORD), SWT.BOLD);
 		String[] keywords = {
 			"val", "var",
 			"public",
-			"defn", "defclass", "defmethod", "defmulti", "definterface", "defsyntax", "defpackage",
-			"if", "else",
-			"for", "where", "when", "in", "generate", "yield",
+			"fn", "defn",
+			"defpackage",
+			"defclass", "definterface", "defstruct",
+			"defmulti", "defmethod",
+			"if", "else", "when",
+			"for", "while", "let",
 			"import"
 		};
 		addRulesToWordRule(keywordRule, keywords, keywordToken);
-		
+
 		rules.add(keywordRule);
-		
+
 		// Comments
-		rules.add(new SingleLineRule(";", "\n", 
+		rules.add(new SingleLineRule(";", "\n",
 				getToken(manager.getColor(IStanzaColorConstants.COMMENT))));
-		
+
 		// Strings
-		rules.add(new SingleLineRule("\"", "\"", 
-				getToken(manager.getColor(IStanzaColorConstants.STRING))));		
-		
+		rules.add(new SingleLineRule("\"", "\"",
+				getToken(manager.getColor(IStanzaColorConstants.STRING))));
+
 		// Generic whitespace rule
 		rules.add(new WhitespaceRule(new IWhitespaceDetector() {
             public boolean isWhitespace(char c) {
